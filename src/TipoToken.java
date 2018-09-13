@@ -1,5 +1,5 @@
 
-package br.com.analisorlexico;
+//package br.com.analisorlexico;
 
 public class TipoToken {
 
