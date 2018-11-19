@@ -1,0 +1,161 @@
+
+package br.com.minic.analisadorsintatico;
+
+/* Simbolos Terminais */
+
+terminal INCLUDE, INT, MAIN;
+terminal IDENTIFICADOR;
+terminal MENOR, MAIOR;
+terminal ABRE_CHAVE, FECHA_CHAVE, ABRE_PARENTESES, FECHA_PARENTESES, JOGO_DA_VELHA, PONTO;
+terminal LETRA_H;
+terminal DOUBLE, CHAR, FLOAT;
+terminal IF, WHILE, ELSE, PRINTF, PRINTINT, PRINTSTR, IGUAL, PONTO_VIRGULA;
+terminal EXCLAMA;
+terminal DIFERENTE_IGUAL, IGUAL_IGUAL, MAIOR_IGUAL, MENOR_IGUAL;
+terminal SOMA, MENOS, VEZES, DIVIDE; 
+terminal LITERAL_INTEIRO, LITERAL_PONTO_FLUTUANTE, LITERAL_CHAR, LITERAL_STRING;
+terminal VIRGULA, RETORNO;
+
+
+
+
+/* Simbolos_No_Terminais */
+
+non terminal ProgramaMiniC;
+non terminal DeclInclude;
+non terminal DeclIncludeOpt;
+non terminal DeclIncludeList;
+non terminal DeclFuncoes;
+non terminal Funcao_Main;
+non terminal DeclTipo;
+non terminal ComandoOPT;
+non terminal DeclComandos;
+non terminal DeclComando;
+non terminal CMDIF;
+non terminal CMDELSE;
+non terminal ListaArgumentos;
+non terminal RestoListaArgumentos;
+non terminal OpRest;
+non terminal ExpRel;
+non terminal RelAux;
+non terminal OpRelacional;
+non terminal ExpAritmetica;
+non terminal T;
+non terminal F;
+non terminal Expressao_EXP;
+non terminal ParametrosP;
+non terminal ParametrosOPT;
+non terminal IdRepet;
+non terminal IdComand;
+non	terminal ExpRepet;
+non terminal ExpComand;
+non terminal OpFunc;
+
+
+
+
+start with ProgramaMiniC;
+
+ProgramaMiniC ::= DeclIncludeOpt Funcao_Main OpFunc {::};
+
+DeclIncludeOpt ::=	{::}
+				| DeclIncludeList {::};
+				
+DeclIncludeList ::=	DeclInclude {::}		
+			    | DeclInclude DeclIncludeList {::};
+			   			   
+DeclInclude ::= JOGO_DA_VELHA INCLUDE MENOR IDENTIFICADOR PONTO LETRA_H MAIOR {::};
+
+DeclFuncoes ::= DeclTipo IDENTIFICADOR ABRE_PARENTESES ListaArgumentos FECHA_PARENTESES ABRE_CHAVE ComandoOPT RETORNO Expressao_EXP PONTO_VIRGULA FECHA_CHAVE {::};
+
+OpFunc ::= {::}
+		| DeclFuncoes {::};
+
+Funcao_Main ::= INT MAIN ABRE_PARENTESES FECHA_PARENTESES ABRE_CHAVE ComandoOPT RETORNO LITERAL_INTEIRO PONTO_VIRGULA FECHA_CHAVE {::};
+
+ListaArgumentos ::= DeclTipo IDENTIFICADOR RestoListaArgumentos {::};
+	
+RestoListaArgumentos ::= {::}
+						| OpRest {::};
+OpRest ::= VIRGULA DeclTipo IDENTIFICADOR {::};
+
+DeclTipo ::= INT {::}
+		| FLOAT {::}
+		| DOUBLE {::}
+		| CHAR {::};
+
+ComandoOPT ::=  {::}
+			   | DeclComandos {::};
+
+DeclComandos  ::= DeclComando {::}
+			| DeclComando DeclComandos  {::};
+
+DeclComando ::=
+				 CMDIF {::}
+				| WHILE ABRE_PARENTESES  ExpRel FECHA_PARENTESES DeclComando {::}
+				| PRINTF ABRE_PARENTESES  Expressao_EXP FECHA_PARENTESES PONTO_VIRGULA {::}
+				| PRINTINT ABRE_PARENTESES  Expressao_EXP FECHA_PARENTESES PONTO_VIRGULA {::}
+				| PRINTSTR ABRE_PARENTESES  Expressao_EXP FECHA_PARENTESES PONTO_VIRGULA {::}
+				| DeclTipo IDENTIFICADOR IdRepet PONTO_VIRGULA {::}
+				| DeclTipo ABRE_PARENTESES IDENTIFICADOR IGUAL Expressao_EXP FECHA_PARENTESES ExpRepet PONTO_VIRGULA {::}
+				| DeclTipo IDENTIFICADOR IGUAL Expressao_EXP PONTO_VIRGULA{::}
+				| IDENTIFICADOR IGUAL Expressao_EXP PONTO_VIRGULA;
+
+
+IdRepet ::=  {::}
+			| IdComand {::};
+
+IdComand ::= ABRE_PARENTESES VIRGULA IDENTIFICADOR FECHA_PARENTESES {::};
+
+
+ExpRepet ::= {::}
+			| ExpComand {::};
+
+ExpComand ::= ABRE_PARENTESES VIRGULA IDENTIFICADOR IGUAL Expressao_EXP FECHA_PARENTESES {::};
+
+
+CMDIF ::= IF ABRE_PARENTESES  ExpRel FECHA_PARENTESES DeclComando {::} 
+		| CMDELSE {::};
+
+CMDELSE ::= ELSE DeclComando {::};
+
+
+
+ExpRel ::= RelAux OpRelacional RelAux {::}
+		  | EXCLAMA ABRE_PARENTESES ExpRel FECHA_PARENTESES {::};
+			
+RelAux ::=  IDENTIFICADOR {::}
+		| LITERAL_INTEIRO {::}
+		| LITERAL_PONTO_FLUTUANTE{::};
+
+OpRelacional ::= MAIOR {::}
+				| MENOR {::}
+				| IGUAL_IGUAL {::}
+				| MAIOR_IGUAL {::}
+				| MENOR_IGUAL {::}
+				| DIFERENTE_IGUAL {::};
+
+ExpAritmetica ::= ExpAritmetica SOMA T {::}
+				| ExpAritmetica MENOS T {::}
+				| T {::};
+
+T ::= T VEZES F {::}
+	| T DIVIDE F {::}
+	| F {::};
+
+F ::= ABRE_PARENTESES ExpAritmetica FECHA_PARENTESES {::}
+	| IDENTIFICADOR {::}
+	| LITERAL_INTEIRO {::}
+	| LITERAL_PONTO_FLUTUANTE {::}
+	| IDENTIFICADOR ABRE_PARENTESES ParametrosP FECHA_PARENTESES{::};
+
+Expressao_EXP ::= ExpAritmetica {::}
+			| LITERAL_CHAR	{::}
+			| LITERAL_STRING {::};
+
+ParametrosP ::= {::}
+			| ParametrosOPT {::};
+
+ParametrosOPT ::= Expressao_EXP{::};
+
+
