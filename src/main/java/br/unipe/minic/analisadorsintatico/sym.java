@@ -4,7 +4,7 @@
 // Fri Nov 09 15:36:19 GFT 2018
 //----------------------------------------------------
 
-package br.com.minic.analisadorsintatico;
+package br.unipe.minic.analisadorsintatico;
 
 /** CUP generated class containing symbol constants. */
 public class sym {

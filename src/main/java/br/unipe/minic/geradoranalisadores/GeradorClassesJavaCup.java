@@ -1,5 +1,5 @@
 
-package br.com.minic.geradoranalisadores;
+package br.unipe.minic.geradoranalisadores;
 
 import java.io.IOException;
 
