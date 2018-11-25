@@ -1,0 +1,168 @@
+
+package br.com.minic.analisadorsintatico;
+
+/* Simbolos Terminais */
+
+terminal INCLUDE;
+terminal INT, CHAR, FLOAT, DOUBLE;
+terminal MAIN, RETURN, IF, WHILE, PRINTF, PRINTINT, PRINTSTR, ELSE, VOID;
+terminal IDENTIFICADOR;
+terminal LITERAL_INTEIRO;
+terminal LITERAL_PONTO_FLUTUANTE;
+terminal LITERAL_CHAR;
+terminal LITERAL_STRING;
+terminal MENOR, MENOR_IGUAL, MAIOR, MAIOR_IGUAL, ATRIBUICAO, IGUAL, DIFERENTE, SOMA, SUB, DIV, MULT, VIRGULA;
+terminal ABRE_CHAVE, FECHA_CHAVE, ABRE_PARENTESES, FECHA_PARENTESES, JOGO_DA_VELHA, PONTO, PONTO_VIRGULA;
+terminal LETRA_H, NEGACAO;
+
+/* Simbolos Não Terminais */
+
+non terminal ProgramaMiniC;
+non terminal DeclIncludeOpt;
+non terminal DeclIncludeList;
+non terminal DeclInclude;
+non terminal DeclFuncoesOpt;
+non terminal DeclFuncoesList;
+non terminal DeclFuncao;
+non terminal ParametrosDeclaracaoOpt;
+non terminal ParametrosDeclaracao;
+non terminal RestoListaArgumentos;
+non terminal FuncaoMain;
+non terminal ComandosOpt;
+non terminal ComandosList;
+non terminal Comando;
+non terminal Tipo;
+non terminal TipoMain;
+non terminal ExpressaoRelacional;
+non terminal ExpressaoRelacionalAux;
+non terminal OperadorRelacional;
+non terminal DeclIDOpt;
+non terminal ExpressaoAtr;
+non terminal ExpressaoAritmetica;
+non terminal T, F;
+non terminal Expressao;
+non terminal ParametrosOpt, Parametros, RestoParametros;
+non terminal DeclIDAtrOpt, DeclIDAtrs, DeclIDAtr;
+non terminal RETURNOpt;
+non terminal TipoExpressao;
+
+precedence left ELSE;
+
+/* Produções */
+
+start with ProgramaMiniC;
+
+ProgramaMiniC ::= DeclIncludeOpt FuncaoMain DeclFuncoesOpt {::};
+					   
+DeclIncludeOpt ::=	{::}
+			   | DeclIncludeList {::};
+				
+DeclIncludeList ::=	DeclInclude {::}		
+			    | DeclInclude DeclIncludeList {::};
+			   			   
+DeclInclude ::= JOGO_DA_VELHA INCLUDE MENOR IDENTIFICADOR PONTO LETRA_H MAIOR {::};
+
+FuncaoMain ::= TipoMain MAIN ABRE_PARENTESES FECHA_PARENTESES ABRE_CHAVE ComandosOpt RETURNOpt FECHA_CHAVE {::};
+
+RETURNOpt ::= {::}
+		  | RETURN LITERAL_INTEIRO PONTO_VIRGULA {::};
+		  
+TipoMain ::= INT {::}
+		 | VOID {::};
+	
+TipoExpressao ::= Tipo:tipo {::}
+			  | VOID {::};
+	 
+DeclFuncoesOpt ::= 	{::}
+				| DeclFuncoesList:funcoes {::};
+
+DeclFuncoesList ::=	DeclFuncao {::}		
+			    | DeclFuncao DeclFuncoesList {::};				
+
+DeclFuncao ::= TipoExpressao IDENTIFICADOR ABRE_PARENTESES ParametrosDeclaracaoOpt FECHA_PARENTESES ABRE_CHAVE ComandosOpt RETURN ExpressaoAtr PONTO_VIRGULA FECHA_CHAVE {::};
+
+ParametrosDeclaracaoOpt ::= {::}
+						  | ParametrosDeclaracao {::};
+						  
+ParametrosDeclaracao ::= Tipo IDENTIFICADOR RestoListaArgumentos {::};
+
+RestoListaArgumentos ::= {::} 
+					 | VIRGULA ParametrosDeclaracao {::};
+
+Tipo ::= CHAR {::}
+	|    INT {::} 
+	|    FLOAT {::}
+	|    DOUBLE {::};
+					 
+ComandosOpt ::= {: RESULT = null; :}
+			|  ComandosList {::};
+			
+ComandosList ::= Comando {::}
+			 |   ComandosList Comando {::};		
+
+Comando ::= ABRE_CHAVE ComandosOpt FECHA_CHAVE {::} 
+		| IF ABRE_PARENTESES ExpressaoRelacional FECHA_PARENTESES Comando ELSE Comando {::}
+		| IF ABRE_PARENTESES ExpressaoRelacional FECHA_PARENTESES Comando {::}		
+		| WHILE ABRE_PARENTESES ExpressaoRelacional FECHA_PARENTESES Comando {::}
+		| PRINTF ABRE_PARENTESES Expressao FECHA_PARENTESES PONTO_VIRGULA {::}
+		| PRINTINT ABRE_PARENTESES Expressao FECHA_PARENTESES PONTO_VIRGULA {::}
+		| PRINTSTR ABRE_PARENTESES Expressao FECHA_PARENTESES PONTO_VIRGULA {::}
+		| IDENTIFICADOR ATRIBUICAO ExpressaoAtr PONTO_VIRGULA {::}
+		| Tipo IDENTIFICADOR DeclIDOpt PONTO_VIRGULA {::}
+		| Tipo IDENTIFICADOR ATRIBUICAO ExpressaoAtr DeclIDAtrOpt PONTO_VIRGULA {::};
+	
+DeclIDAtrOpt ::= {::} 
+	         | DeclIDAtrs {::};
+	   
+DeclIDAtrs ::= VIRGULA DeclIDAtr DeclIDAtrOpt {::};
+
+DeclIDAtr ::= IDENTIFICADOR ATRIBUICAO ExpressaoAtr {::};
+
+DeclIDOpt ::= {::}
+		  |   VIRGULA IDENTIFICADOR DeclIDOpt {::};
+	
+Expressao ::= {::}
+		  |   ExpressaoAtr {::}
+		  |   LITERAL_STRING {::};
+		  	  
+ExpressaoRelacional ::= ExpressaoRelacionalAux OperadorRelacional ExpressaoRelacionalAux {::}
+					|   ExpressaoRelacionalAux {::};
+					
+ExpressaoRelacionalAux ::= IDENTIFICADOR {::}
+                       |   LITERAL_INTEIRO {::}
+                       |   LITERAL_PONTO_FLUTUANTE {::}
+                       |   NEGACAO ABRE_PARENTESES ExpressaoRelacional FECHA_PARENTESES {::};
+
+OperadorRelacional ::= MAIOR {::}
+					| MAIOR_IGUAL {::}
+					| MENOR {::}
+					| MENOR_IGUAL {::}
+					| IGUAL {::}
+					| DIFERENTE {::};					
+
+ExpressaoAtr ::= ExpressaoAritmetica:expAritmetica  {::}
+			  |  LITERAL_CHAR:lc {::};
+		  	  
+ExpressaoAritmetica ::= ExpressaoAritmetica:exp SOMA T:t {::} 
+				     |  ExpressaoAritmetica:exp SUB T:t {::}
+				     |  T:t {: RESULT = t; :};
+
+T ::= T MULT F {::}
+  |   T DIV F {::}
+  |   F {::};
+
+F ::= SUB F {::}
+  |	  ABRE_PARENTESES ExpressaoAritmetica FECHA_PARENTESES {::} 
+  |   IDENTIFICADOR ABRE_PARENTESES ParametrosOpt FECHA_PARENTESES {::}
+  |   LITERAL_INTEIRO {::}
+  |   LITERAL_PONTO_FLUTUANTE {::}
+  |   IDENTIFICADOR {::};  
+
+ParametrosOpt ::= {::}
+		       | Parametros {::};
+		       
+Parametros ::= ExpressaoAtr RestoParametros {::}
+		   |   LITERAL_STRING RestoParametros {::};
+
+RestoParametros ::= {::}
+	 		     | VIRGULA Parametros {::};
