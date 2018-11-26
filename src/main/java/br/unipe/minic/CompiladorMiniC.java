@@ -1,25 +1,26 @@
-
 package br.unipe.minic;
 
+import java.io.File;
 import java.io.FileReader;
 
-import br.unipe.minic.analisadorlexico.AnalisadorLexico;
-import br.unipe.minic.analisadorsintatico.parser;
+import br.unipe.minic.elementos.ProgramaMiniC;
 import java_cup.runtime.Symbol;
 
 public class CompiladorMiniC {
 
   public static void main(String[] args) throws Exception {
   
-    FileReader arquivoTeste = new FileReader( "programas/ProgramaTeste2.txt" );
-        
-    AnalisadorLexico analisadorLexico = new AnalisadorLexico( arquivoTeste );
-
-    parser analisadorSintatico = new parser( analisadorLexico );
+	File programaTeste = new File ( "programas/Programa_1_MiniC.txt" );
     
-    Symbol symbol = analisadorSintatico.parse();
-    
-    System.out.println( symbol );
+	AnalisadorLexico analisadorLexico = new AnalisadorLexico( new FileReader( programaTeste ) );
+	
+	parser parser = new parser( analisadorLexico );
+	
+	Symbol symbol = parser.parse();
+	
+	ProgramaMiniC programaMiniC = (ProgramaMiniC) symbol.value;
+	
+	System.out.println(programaMiniC );
     
   }
   
