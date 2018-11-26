@@ -1,6 +1,6 @@
-package br.com.minic;
+package br.unipe.minic;
 
-import br.com.minic.elementos.*;
+import br.unipe.minic.elementos.*;
 
 /* Simbolos Terminais */
 

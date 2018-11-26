@@ -1,4 +1,4 @@
-package br.com.minic;
+package br.unipe.minic;
 
 import java_cup.runtime.*;
 
